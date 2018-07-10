@@ -20,5 +20,8 @@
   "homepage": "https://github.com/daughedm/BYOB#readme",
   "dependencies": {
     "nightmare": "^3.0.1"
+  },
+  "devDependencies": {
+    "locus": "^2.0.1"
   }
 }
