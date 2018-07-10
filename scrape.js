@@ -4,36 +4,46 @@ var nightmare = Nightmare({
 });
 
 nightmare
-  .goto('https://www.builtincolorado.com/companies?status=hiring_now')
+  .goto('https://www.glassdoor.com/Interview/denver-software-engineer-interview-questions-SRCH_IL.0,6_IM234_KO7,24_IP2.htm')
+  .wait(2000)
   .evaluate(function () {
-    var allCompanies = document.querySelectorAll('.wrap-view-page a')
-    var list = [].slice.call(allCompanies); // Why did I have to do this?
-    return list.map(function (node) {
-      return node.href
-    });
+    var questionNodes = document.querySelectorAll('p.h3.questionText')
+    var questionList = [].slice.call(questionNodes);
+    var cleanQuestions = questionList.map(node => {
+      return node.innerText
+    })
+    var companiesAndPositionsNodes = document.querySelectorAll('.authorInfo a');
+    var companiesAndPositionsList = [].slice.call(companiesAndPositionsNodes);
+    var cleanCompaniesAndPositions = companiesAndPositionsList.map(node => {
+      return node.innerText
+    })
+    var cleanPositions = cleanCompaniesAndPositions.map(string => {
+      return string.split(' at')[0];
+    })
+    var cleanCompanies = cleanCompaniesAndPositions.map(string => {
+      return string.split(' at')[1].split(' was')[0];
+    })
+
+    var datesNodes = document.querySelectorAll('.cell.alignRt.noWrap.minor.hideHH')
+    var dateList = [].slice.call(datesNodes);
+    var cleanDates = dateList.map(node => {
+      return node.innerText
+    })
+   return cleanCompanies.map((company, index) => {
+      return {
+        company,
+        position: cleanPositions[index],
+        question: cleanQuestions[index],
+        date: cleanDates[index]
+      }
+    })
   })
   .end()
   .then(function (result) {
-    result.map(endpoint => {
-      nightmare
-        .goto(endpoint)
-        .evaluate(function () {
-          var name = document.querySelector('.company-card-title h1').innerText;
-          var industry = document.querySelector('.col-industry .item').innerText;
-          var tatalEmployees = document.querySelector('.field_total_employees .item').innerText;
-          var localEmployees = document.querySelector('.field_local_employees .item').innerText;
-          var openJobs = document.querySelectorAll('.job-opportunities div.title').length;
-
-          var benefitsNodes = document.querySelectorAll('.notice-title div')
-          var allBenefits = [].slice.call(benefitsNodes);
-          var benefits = allBenefits.map(benefit => {
-            return benefit.innerHTML
-          })
-
-          
-        });
+   
+     console.log(result)
+        
     })
-  })
   .catch(function (error) {
     console.error('Search failed:', error);
   });
