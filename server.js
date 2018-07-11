@@ -6,12 +6,16 @@ const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
 
 app.set('port', process.env.PORT || 3000);
-app.locals.title = 'Chat Box';
+app.locals.title = 'Company Interview Questions';
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('public'))
 
 
-
+//gets
 app.get('/', (request, response) => {
-  response.send('Oh hey Chat Box');
+  response.send('Welcome to Company Interview Questions');
 });
 
 app.get('/api/v1/companies', (request, response) => {
@@ -71,6 +75,8 @@ app.get('/api/v1/questions/:id', (request, response) => {
     });
 });
 
+
+//posts
 app.post('/api/v1/companies', (request, response) => {
   const {
     company
@@ -104,6 +110,9 @@ app.post('/api/v1/questions', (request, response) => {
       });
     });
 });
+
+
+//puts
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
