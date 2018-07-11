@@ -29,6 +29,20 @@ const checkQuestionParams = (request, response, next) => {
   }
 }
 
+const checkQuestionId = (request, response, next) => {
+  database('questions').where('id', request.params.id)
+    .select()
+    .then(question => {
+      if(!question) {
+        return response.status(404).json({
+          error: 'Sorry, question could not be found'
+        })
+      } else {
+        next()
+      }
+    })
+}
+
 
 //gets
 app.get('/', (request, response) => {
@@ -143,23 +157,48 @@ app.post('/api/v1/questions', checkQuestionParams, (request, response) => {
 });
 
 
-//puts
-app.put('/api/v1/questions/:id', checkQuestionParams, (request, response) => {
-
+// puts
+app.put('/api/v1/questions/:id', checkQuestionParams, checkQuestionId, (request, response) => {
+  const { id } = request.params
+  const { question, position, date } = request.body;
+     database('questions').where("id", id)
+      .update({
+        question,
+        position,
+        date
+      })
+      .then(updatedQuestion => {
+        console.log(updatedQuestion)
+        response.status(200).send(`updated ${updatedQuestion} question.`)
+      })
+      .catch(error => response.status(400).send(error));
 })
 
-app.put('/api/v1/companies/:id', checkCompanyParams, (request, response) => {
+// app.put('/api/v1/companies/:id', checkCompanyParams, (request, response) => {
 
-})
+// })
+
 
 //delete
-app.delete('/api/v1/questions/:id', (request, response) => {
-
-})
-
 app.delete('/api/v1/companies/:id', (request, response) => {
+  const { id } = request.params;
 
-})
+  return database('companies').where('id', id).del()
+    .then(companies => response.status(204))
+    .catch(error => response.status(500).json({
+      error
+    }));
+});
+
+app.delete('/api/v1/questions/:id', (request, response) => {
+  const { id } = request.params;
+
+  return database('questions').where('id', id).del()
+    .then(questions => response.status(204))
+    .catch(error => response.status(500).json({
+      error
+    }));
+});
 
 
 
