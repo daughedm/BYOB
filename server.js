@@ -64,17 +64,23 @@ app.get('/api/v1/questions', (request, response) => {
 });
 
 app.get('/api/v1/questions/:id', (request, response) => {
-  database('questions')
+const { id } = request.params
+
+  database('questions').where("id", id)
     .select()
-    .then((questions) => {
-      response.status(200).json(questions);
+    .then(question => {
+      if (!question) {
+        return response.status(404).json({
+          error: 'Sorry, question could not be found'
+        })
+      } else {
+      response.status(200).json(question[0])
+      }
     })
-    .catch((error) => {
-      response.status(500).json({
-        error
-      });
-    });
-});
+    .catch(error => {
+      response.status(500).json({ error })
+    })
+})
 
 
 //posts
