@@ -31,18 +31,19 @@ app.get('/api/v1/companies', (request, response) => {
     });
 });
 
-app.get('/api/v1/companies/:id/questions', (request, response) => {
+app.get('/api/v1/companies/:id', (request, response) => {
   const { id } = request.params
 
-  database('questions').where("company_id", id)
+  database('companies').where("id", id)
     .select()
-    .then(questions => {
-      if (!questions.length) {
+    .then(company => {
+      if (!company) {
         return response.status(404).json({
-          error: 'Sorry, no questions could be found'
+          error: 'Sorry, company could not be found'
         })
+      } else {
+      response.status(200).json(company[0])
       }
-      response.status(200).json(questions)
     })
     .catch(error => {
       response.status(500).json({ error })
@@ -113,6 +114,24 @@ app.post('/api/v1/questions', (request, response) => {
 
 
 //puts
+app.put('/api/v1/questions/:id', (request, response) => {
+
+})
+
+app.put('/api/v1/companies/:id', (request, response) => {
+
+})
+
+//delete
+app.delete('/api/v1/questions/:id', (request, response) => {
+
+})
+
+app.delete('/api/v1/companies/:id', (request, response) => {
+
+})
+
+
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
