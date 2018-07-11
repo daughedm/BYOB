@@ -12,6 +12,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'))
 
+const checkCompanyParams = (request, response, next) => {
+  if(!request.body.name) {
+    response.status(422).send('Missing a name in the body of your request.')
+  } else {
+    next();
+  }
+}
+
+const checkQuestionParams = (request, response, next) => {
+  // if (!request.body.name) {
+  //   response.status(422).send('Missing a name in the body of your request.')
+  // } 
+    next();
+  
+}
+
 
 //gets
 app.get('/', (request, response) => {
@@ -84,11 +100,9 @@ const { id } = request.params
 
 
 //posts
-app.post('/api/v1/companies', (request, response) => {
-  const {
-    company
-  } = request.body
-  database('companies').insert(company, 'id')
+app.post('/api/v1/companies', checkCompanyParams, (request, response) => {
+  const { name } = request.body
+  database('companies').insert({ name, totalQuestions: 0 }, 'id')
     .then((companyId) => {
       response.status(201).json({
         companyId: companyId[0]
@@ -101,7 +115,7 @@ app.post('/api/v1/companies', (request, response) => {
     });
 });
 
-app.post('/api/v1/questions', (request, response) => {
+app.post('/api/v1/questions', checkQuestionParams, (request, response) => {
   const {
     question
   } = request.body
@@ -120,11 +134,11 @@ app.post('/api/v1/questions', (request, response) => {
 
 
 //puts
-app.put('/api/v1/questions/:id', (request, response) => {
+app.put('/api/v1/questions/:id', checkQuestionParams, (request, response) => {
 
 })
 
-app.put('/api/v1/companies/:id', (request, response) => {
+app.put('/api/v1/companies/:id', checkCompanyParams, (request, response) => {
 
 })
 
