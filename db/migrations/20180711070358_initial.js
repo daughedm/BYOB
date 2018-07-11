@@ -3,7 +3,7 @@ exports.up = function (knex, Promise) {
     knex.schema.createTable('companies', function (table) {
       table.increments('id').primary();
       table.string('name');
-      table.number('totalQuestions')
+      table.integer('totalQuestions')
 
       table.timestamps(true, true);
     }),
