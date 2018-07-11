@@ -21,11 +21,12 @@ const checkCompanyParams = (request, response, next) => {
 }
 
 const checkQuestionParams = (request, response, next) => {
-  // if (!request.body.name) {
-  //   response.status(422).send('Missing a name in the body of your request.')
-  // } 
+  const {question, company, date, position} = request.body
+  if (!question || !company || !date || !position) {
+    response.status(422).send('Missing content in the body of your request.')
+  } else {
     next();
-  
+  }
 }
 
 
