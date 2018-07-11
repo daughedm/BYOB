@@ -1,4 +1,4 @@
-export const questions = [{
+const questions = [{
     company: 'Microsoft',
     date: 'Aug 16, 2012',
     position: 'Software Development Engineer In Test (SDET)',
@@ -301,7 +301,7 @@ export const questions = [{
 ];
 
 const getCompanies = (questions) => {
-  return rawQuestions.reduce((companiesObj, question) => {
+  return questions.reduce((companiesObj, question) => {
     if (!companiesObj[question.company]) {
       companiesObj[question.company] = {
         name: question.company,
@@ -309,12 +309,17 @@ const getCompanies = (questions) => {
       };
     } 
 
-    companiesObj[question.company].questions.push(question.question);
+    companiesObj[question.company].questions.push(question);
 
     return companiesObj;
   }, {})
 }
 
-export const companies = getCompanies(rawQuestions);
+const companies = getCompanies(questions);
+
+module.exports = {
+  questions, 
+  companies
+}
 
 
