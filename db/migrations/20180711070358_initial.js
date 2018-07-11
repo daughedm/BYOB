@@ -10,7 +10,7 @@ exports.up = function (knex, Promise) {
 
     knex.schema.createTable('questions', function (table) {
       table.increments('id').primary();
-      table.string('question');
+      table.string('question', 1000);
       table.string('position');
       table.string('date');
       table.integer('company_id').unsigned()

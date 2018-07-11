@@ -1,30 +1,51 @@
+const {
+  companies
+} = require('../../../data');
+
+const createCompany = (knex, company) => {
+  return knex('companies').insert({
+      name: company.name,
+      totalQuestions: company.questions.length
+    }, 'id')
+    .then(companyId => {
+      let questionPromises = [];
+
+      company.questions.forEach(questionObj => {
+        let {
+          question,
+          date,
+          position
+        } = questionObj;
+        questionPromises.push(
+          createQuestion(knex, {
+            question,
+            position,
+            date,
+            company_id: companyId[0]
+          })
+        )
+      });
+      return Promise.all(questionPromises);
+    })
+}
+
+const createQuestion = (knex, question) => {
+  return knex('questions').insert(question)
+}
+
+
+
 exports.seed = function (knex, Promise) {
   return knex('questions').del()
     .then(() => knex('companies').del())
     .then(() => {
-      return Promise.all([
-        knex('companies').insert({
-          name: 'Cool Thing',
-          totalQuestions: 2
-        }, 'id')
-        .then(company => {
-          return knex('questions').insert([{
-            question: 'What would you rather fight, 1000 duck size horses or one horse sized duck?',
-            position: 'Developer',
-            date: 'June 21 2018',
-            company_id: company[0]
-          },
-          {
-            question: 'What would you rather fight, 1000 duck size horses or one horse sized duck?',
-            position: 'Developer',
-            date: 'June 21 2018',
-            company_id: company[0]
-          }
-        ])
-        })
-        .then(() => console.log('Seeding complete!'))
-        .catch(error => console.log(`Error seeding data: ${error}`))
-      ]) // end return Promise.all
+      let companyPromises = [];
+      const companyKeys = Object.keys(companies)
+      
+      companyKeys.forEach(key => {
+        companyPromises.push(createCompany(knex, companies[key]))
+      })
+      return Promise.all(companyPromises)
     })
     .catch(error => console.log(`Error seeding data: ${error}`));
 };
