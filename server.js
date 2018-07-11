@@ -116,20 +116,29 @@ app.post('/api/v1/companies', checkCompanyParams, (request, response) => {
 });
 
 app.post('/api/v1/questions', checkQuestionParams, (request, response) => {
-  const {
-    question
-  } = request.body
-  database('questions').insert(question, 'id')
-    .then((questionId) => {
-      response.status(201).json({
-        questionId: questionId[0]
-      });
+  const { question, date, position, company } = request.body
+  
+  database('companies').where("name", company)
+  .select()
+  .then((companyObj) => {
+    const newQuestion = {
+      question,
+      date,
+      position,
+      company_id: companyObj[0].id
+    }
+    database('questions').insert(newQuestion, 'id')
+      .then((questionId) => {
+        response.status(201).json({
+          questionId: questionId[0]
+        });
+      })
+      .catch((error) => {
+        response.status(500).json({
+          error
+        });
+      })
     })
-    .catch((error) => {
-      response.status(500).json({
-        error
-      });
-    });
 });
 
 
