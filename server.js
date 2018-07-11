@@ -33,9 +33,24 @@ const checkQuestionId = (request, response, next) => {
   database('questions').where('id', request.params.id)
     .select()
     .then(question => {
-      if(!question) {
+      if(!question.length) {
         return response.status(404).json({
           error: 'Sorry, question could not be found'
+        })
+      } else {
+        next()
+      }
+    })
+  }
+  
+  const checkCompanyId = (request, response, next) => {
+    database('companies').where('id', request.params.id)
+    .select()
+    .then(company => {
+      console.log(company)
+      if (!company.length) {
+        return response.status(404).json({
+          error: 'Sorry, company could not be found'
         })
       } else {
         next()
@@ -168,15 +183,23 @@ app.put('/api/v1/questions/:id', checkQuestionParams, checkQuestionId, (request,
         date
       })
       .then(updatedQuestion => {
-        console.log(updatedQuestion)
         response.status(200).send(`updated ${updatedQuestion} question.`)
       })
       .catch(error => response.status(400).send(error));
 })
 
-// app.put('/api/v1/companies/:id', checkCompanyParams, (request, response) => {
-
-// })
+app.put('/api/v1/companies/:id', checkCompanyParams, checkCompanyId, (request, response) => {
+  const { id } = request.params
+  const { name } = request.body;
+     database('companies').where("id", id)
+      .update({
+        name
+      })
+      .then(updatedCompany => {
+        response.status(200).send(`updated ${updatedCompany} company.`)
+      })
+      .catch(error => response.status(400).send(error));
+})
 
 
 //delete
