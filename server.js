@@ -196,7 +196,7 @@ app.post('/api/v1/authenticate', (request, response) => {
 });
 
 
-app.post('/api/v1/companies', checkCompanyParams, (request, response) => {
+app.post('/api/v1/companies', checkAuth, checkCompanyParams, (request, response) => {
   const { name } = request.body
   database('companies').insert({ name, totalQuestions: 0 }, 'id')
     .then((companyId) => {
@@ -211,7 +211,7 @@ app.post('/api/v1/companies', checkCompanyParams, (request, response) => {
     });
 });
 
-app.post('/api/v1/questions', checkQuestionParams, (request, response) => {
+app.post('/api/v1/questions', checkAuth, checkQuestionParams, (request, response) => {
   const { question, date, position, company } = request.body
   
   database('companies').where("name", company)
@@ -239,7 +239,7 @@ app.post('/api/v1/questions', checkQuestionParams, (request, response) => {
 
 
 // puts
-app.put('/api/v1/questions/:id', checkQuestionParams, checkQuestionId, (request, response) => {
+app.put('/api/v1/questions/:id', checkAuth, checkQuestionParams, checkQuestionId, (request, response) => {
   const { id } = request.params
   const { question, position, date } = request.body;
      database('questions').where("id", id)
@@ -254,7 +254,7 @@ app.put('/api/v1/questions/:id', checkQuestionParams, checkQuestionId, (request,
       .catch(error => response.status(400).send(error));
 })
 
-app.put('/api/v1/companies/:id', checkCompanyParams, checkCompanyId, (request, response) => {
+app.put('/api/v1/companies/:id', checkAuth, checkCompanyParams, checkCompanyId, (request, response) => {
   const { id } = request.params
   const { name } = request.body;
      database('companies').where("id", id)
@@ -269,7 +269,7 @@ app.put('/api/v1/companies/:id', checkCompanyParams, checkCompanyId, (request, r
 
 
 //delete
-app.delete('/api/v1/companies/:id', (request, response) => {
+app.delete('/api/v1/companies/:id', checkAuth, (request, response) => {
   const { id } = request.params;
 
   return database('companies').where('id', id).del()
@@ -279,7 +279,7 @@ app.delete('/api/v1/companies/:id', (request, response) => {
     }));
 });
 
-app.delete('/api/v1/questions/:id', (request, response) => {
+app.delete('/api/v1/questions/:id', checkAuth, (request, response) => {
   const { id } = request.params;
 
   return database('questions').where('id', id).del()
