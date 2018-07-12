@@ -5,45 +5,45 @@ const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
 const jwt = require('jsonwebtoken');
-require('dotenv').config()
+require('dotenv').config();
 
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Company Interview Questions';
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'))
+app.use(express.static('public'));
 
 const checkCompanyParams = (request, response, next) => {
-  if(!request.body.name) {
-    response.status(422).send('Missing a name in the body of your request.')
+  if (!request.body.name) {
+    response.status(422).send('Missing a name in the body of your request.');
   } else {
     next();
   }
-}
+};
 
 const checkQuestionParams = (request, response, next) => {
-  const {question, company, date, position} = request.body
+  const {question, company, date, position} = request.body;
   if (!question || !company || !date || !position) {
-    response.status(422).send('Missing content in the body of your request.')
+    response.status(422).send('Missing content in the body of your request.');
   } else {
     next();
   }
-}
+};
 
 const checkQuestionId = (request, response, next) => {
   database('questions').where('id', request.params.id)
     .select()
     .then(question => {
-      if(!question.length) {
+      if (!question.length) {
         return response.status(404).json({
           error: 'Sorry, question could not be found'
-        })
+        });
       } else {
-        next()
+        next();
       }
-    })
-}
+    });
+};
 
 const checkCompanyId = (request, response, next) => {
   database('companies').where('id', request.params.id)
@@ -52,28 +52,28 @@ const checkCompanyId = (request, response, next) => {
       if (!company.length) {
         return response.status(404).json({
           error: 'Sorry, company could not be found'
-        })
+        });
       } else {
-        next()
+        next();
       }
-    })
-}
+    });
+};
 
 const checkAuth = (request, response, next) => {
   const { token } = request.query;
 
   if (!token) {
-    return response.status(403).send('You must be authorized to hit this endpoint.')
+    return response.status(403).send('You must be authorized to hit this endpoint.');
   } else {
     try {
-      const verified = jwt.verify(token, process.env.SECRET_KEY)
+      const verified = jwt.verify(token, process.env.SECRET_KEY);
 
       next();
     } catch (error) {
       return response.status(403).send(error.message);
     }
   }
-}
+};
 
 const verifyEmail = (request, response, next) => {
   const { token } = request.query;
@@ -82,11 +82,11 @@ const verifyEmail = (request, response, next) => {
   const emailEnd = email.split('@')[1];
 
   if (emailEnd !== 'turing.io') {
-    return response.status(403).send('You must have a valid admin email.')
+    return response.status(403).send('You must have a valid admin email.');
   } else {
     next();
   }
-}
+};
 
 //gets
 app.get('/', (request, response) => {
@@ -107,7 +107,7 @@ app.get('/api/v1/companies', (request, response) => {
 });
 
 app.get('/api/v1/companies/:id', (request, response) => {
-  const { id } = request.params
+  const { id } = request.params;
 
   database('companies').where("id", id)
     .select()
@@ -115,56 +115,55 @@ app.get('/api/v1/companies/:id', (request, response) => {
       if (!company) {
         return response.status(404).json({
           error: 'Sorry, company could not be found'
-        })
+        });
       } else {
-      response.status(200).json(company[0])
+        response.status(200).json(company[0]);
       }
     })
     .catch(error => {
-      response.status(500).json({ error })
-    })
-})
+      response.status(500).json({ error });
+    });
+});
 
 app.get('/api/v1/questions', (request, response) => {
   const companyQuery = request.query.company;
-  if(!companyQuery) {
-  database('questions')
-    .select()
-    .then((questions) => {
-      response.status(200).json(questions);
-    })
-    .catch((error) => {
-      response.status(500).json({
-        error
+  if (!companyQuery) {
+    database('questions')
+      .select()
+      .then((questions) => {
+        response.status(200).json(questions);
+      })
+      .catch((error) => {
+        response.status(500).json({
+          error
+        });
       });
-    })
   } else {
     database('companies')
       .where('name', companyQuery)
       .select()
       .then(company => {
-        console.log(company)
         if (!company.length) {
-          return response.status(404).send('Company not found.')
+          return response.status(404).send('Company not found.');
         } else {
           database('questions')
-          .where('company_id', company[0].id)
-          .select()
-          .then(questions => {
-            return response.status(200).json(questions)
-          })
+            .where('company_id', company[0].id)
+            .select()
+            .then(questions => {
+              return response.status(200).json(questions);
+            });
         }
       })
       .catch((error) => {
-      response.status(500).json({
-        error
+        response.status(500).json({
+          error
+        });
       });
-    })
   }
 });
 
 app.get('/api/v1/questions/:id', (request, response) => {
-const { id } = request.params
+  const { id } = request.params;
 
   database('questions').where("id", id)
     .select()
@@ -172,15 +171,15 @@ const { id } = request.params
       if (!question) {
         return response.status(404).json({
           error: 'Sorry, question could not be found'
-        })
+        });
       } else {
-      response.status(200).json(question[0])
+        response.status(200).json(question[0]);
       }
     })
     .catch(error => {
-      response.status(500).json({ error })
-    })
-})
+      response.status(500).json({ error });
+    });
+});
 
 
 //posts
@@ -194,7 +193,7 @@ app.post('/api/v1/authenticate', (request, response) => {
     if (!payload[param]) {
       missingParams.push(param);
     }
-  })
+  });
 
   if (missingParams.length) {
     return response.status(422).send(`You are missing ${missingParams.join(', ')} in the body of your request.`);
@@ -203,14 +202,14 @@ app.post('/api/v1/authenticate', (request, response) => {
       payload, 
       process.env.SECRET_KEY,
       { expiresIn: '48h' } 
-    )
+    );
     return response.status(200).json(token);
   }
 });
 
 
 app.post('/api/v1/companies', checkAuth, verifyEmail, checkCompanyParams, (request, response) => {
-  const { name } = request.body
+  const { name } = request.body;
   database('companies').insert({ name, totalQuestions: 0 }, 'id')
     .then((companyId) => {
       response.status(201).json({
@@ -225,60 +224,60 @@ app.post('/api/v1/companies', checkAuth, verifyEmail, checkCompanyParams, (reque
 });
 
 app.post('/api/v1/questions', checkAuth, verifyEmail, checkQuestionParams, (request, response) => {
-  const { question, date, position, company } = request.body
+  const { question, date, position, company } = request.body;
   
   database('companies').where("name", company)
-  .select()
-  .then((companyObj) => {
-    const newQuestion = {
-      question,
-      date,
-      position,
-      company_id: companyObj[0].id
-    }
-    database('questions').insert(newQuestion, 'id')
-      .then((questionId) => {
-        response.status(201).json({
-          questionId: questionId[0]
+    .select()
+    .then((companyObj) => {
+      const newQuestion = {
+        question,
+        date,
+        position,
+        company_id: companyObj[0].id
+      };
+      database('questions').insert(newQuestion, 'id')
+        .then((questionId) => {
+          response.status(201).json({
+            questionId: questionId[0]
+          });
+        })
+        .catch((error) => {
+          response.status(500).json({
+            error
+          });
         });
-      })
-      .catch((error) => {
-        response.status(500).json({
-          error
-        });
-      })
-    })
+    });
 });
 
 
 // puts
 app.put('/api/v1/questions/:id', checkAuth, verifyEmail, checkQuestionParams, checkQuestionId, (request, response) => {
-  const { id } = request.params
+  const { id } = request.params;
   const { question, position, date } = request.body;
-     database('questions').where("id", id)
-      .update({
-        question,
-        position,
-        date
-      })
-      .then(updatedQuestion => {
-        response.status(200).send(`updated ${updatedQuestion} question.`)
-      })
-      .catch(error => response.status(400).send(error));
-})
+  database('questions').where("id", id)
+    .update({
+      question,
+      position,
+      date
+    })
+    .then(updatedQuestion => {
+      response.status(200).send(`updated ${updatedQuestion} question.`);
+    })
+    .catch(error => response.status(400).send(error));
+});
 
 app.put('/api/v1/companies/:id', checkAuth, verifyEmail, checkCompanyParams, checkCompanyId, (request, response) => {
-  const { id } = request.params
+  const { id } = request.params;
   const { name } = request.body;
-     database('companies').where("id", id)
-      .update({
-        name
-      })
-      .then(updatedCompany => {
-        response.status(200).send(`updated ${updatedCompany} company.`)
-      })
-      .catch(error => response.status(400).send(error));
-})
+  database('companies').where("id", id)
+    .update({
+      name
+    })
+    .then(updatedCompany => {
+      response.status(200).send(`updated ${updatedCompany} company.`);
+    })
+    .catch(error => response.status(400).send(error));
+});
 
 
 //delete

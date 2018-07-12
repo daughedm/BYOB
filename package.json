@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "eslint": "./node_modules/eslint/bin/eslint.js *.js --ignore-pattern *.test.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,10 @@
     "pg": "^7.4.3"
   },
   "devDependencies": {
+    "babel-eslint": "^8.2.6",
+    "eslint": "^5.1.0",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0",
     "locus": "^2.0.1"
   }
 }
