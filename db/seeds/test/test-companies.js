@@ -4,7 +4,7 @@ exports.seed = function(knex, Promise) {
     .then(() => {
       return Promise.all([
         knex('companies').insert({ name: 'Turing' }, 'id')
-        .then(project => {
+        .then(company => {
           return knex('questions').insert([
             { question: 'What is your favorite color?',
               position: 'Sr. Developer', 
