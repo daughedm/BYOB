@@ -1,9 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const environment = process.env.NODE_ENV || 'development';
-const configuration = require('./knexfile')[environment];
-const database = require('knex')(configuration);
+const database = require('./db/knex');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -60,7 +58,8 @@ const checkCompanyId = (request, response, next) => {
 };
 
 const checkAuth = (request, response, next) => {
-  const { token } = request.query;
+  const { authorization } = request.headers;
+  const token = authorization.split('Bearer ')[1];
 
   if (!token) {
     return response.status(403).send('You must be authorized to hit this endpoint.');
@@ -76,7 +75,8 @@ const checkAuth = (request, response, next) => {
 };
 
 const verifyEmail = (request, response, next) => {
-  const { token } = request.query;
+  const { authorization } = request.headers;
+  const token = authorization.split('Bearer ')[1];
   const decoded = jwt.decode(token, {complete: true});
   const { email } = decoded.payload;
   const emailEnd = email.split('@')[1];
@@ -112,7 +112,7 @@ app.get('/api/v1/companies/:id', (request, response) => {
   database('companies').where("id", id)
     .select()
     .then(company => {
-      if (!company) {
+      if (!company.length) {
         return response.status(404).json({
           error: 'Sorry, company could not be found'
         });
@@ -168,7 +168,7 @@ app.get('/api/v1/questions/:id', (request, response) => {
   database('questions').where("id", id)
     .select()
     .then(question => {
-      if (!question) {
+      if (!question.length) {
         return response.status(404).json({
           error: 'Sorry, question could not be found'
         });
@@ -261,7 +261,7 @@ app.put('/api/v1/questions/:id', checkAuth, verifyEmail, checkQuestionParams, ch
       date
     })
     .then(updatedQuestion => {
-      response.status(200).send(`updated ${updatedQuestion} question.`);
+      response.status(200).send(`Updated ${updatedQuestion} question.`);
     })
     .catch(error => response.status(400).send(error));
 });
@@ -274,7 +274,7 @@ app.put('/api/v1/companies/:id', checkAuth, verifyEmail, checkCompanyParams, che
       name
     })
     .then(updatedCompany => {
-      response.status(200).send(`updated ${updatedCompany} company.`);
+      response.status(200).send(`Updated ${updatedCompany} company.`);
     })
     .catch(error => response.status(400).send(error));
 });
@@ -284,17 +284,19 @@ app.put('/api/v1/companies/:id', checkAuth, verifyEmail, checkCompanyParams, che
 app.delete('/api/v1/companies/:id', checkAuth, verifyEmail, (request, response) => {
   const { id } = request.params;
 
-  return database('companies').where('id', id).del()
-    .then(companies => response.status(204))
-    .catch(error => response.status(500).json({
-      error
-    }));
+  database('questions').where('company_id', id).del()
+    .then(questions => {
+      database('companies').where('id', id).del()
+        .then(companies => response.sendStatus(204))
+        .catch(error => response.status(500).json({ error }));
+    })
+    .catch(error => response.status(500).json({ error }));
 });
 
 app.delete('/api/v1/questions/:id', checkAuth, verifyEmail, (request, response) => {
   const { id } = request.params;
 
-  return database('questions').where('id', id).del()
+  database('questions').where('id', id).del()
     .then(questions => response.sendStatus(204))
     .catch(error => response.status(500).json({
       error
@@ -305,3 +307,5 @@ app.delete('/api/v1/questions/:id', checkAuth, verifyEmail, (request, response) 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
 });
+
+module.exports = app;
