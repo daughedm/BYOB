@@ -71,7 +71,7 @@ describe('api routes', () => {
   })
 
   describe('GET /api/v1/companies/:id', () => {
-    it.only('should return a specific company', done => {
+    it('should return a specific company', done => {
       chai.request(server)
         .get('/api/v1/companies/1')
         .end((error, response) => {
@@ -86,9 +86,9 @@ describe('api routes', () => {
         })
     })
 
-    it('should return a 404 if the project was not found', done => {
+    it.only('should return a 404 if the project was not found', done => {
       chai.request(server)
-        .get('/api/v1/projects/3')
+        .get('/api/v1/companies/3')
         .end((err, response) => {
           response.should.have.status(404);
           done();

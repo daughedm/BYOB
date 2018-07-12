@@ -110,7 +110,7 @@ app.get('/api/v1/companies/:id', (request, response) => {
   database('companies').where("id", id)
     .select()
     .then(company => {
-      if (!company) {
+      if (!company.length) {
         return response.status(404).json({
           error: 'Sorry, company could not be found'
         });
