@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
-const database = require('knex')(configuration);
+const database = require('./db/knex');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
