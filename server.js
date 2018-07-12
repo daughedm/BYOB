@@ -97,6 +97,8 @@ app.get('/api/v1/companies/:id', (request, response) => {
 })
 
 app.get('/api/v1/questions', (request, response) => {
+  const companyQuery = request.query.company;
+  if(!companyQuery) {
   database('questions')
     .select()
     .then((questions) => {
@@ -106,7 +108,30 @@ app.get('/api/v1/questions', (request, response) => {
       response.status(500).json({
         error
       });
-    });
+    })
+  } else {
+    database('companies')
+      .where('name', companyQuery)
+      .select()
+      .then(company => {
+        console.log(company)
+        if (!company.length) {
+          return response.status(404).send('Company not found.')
+        } else {
+          database('questions')
+          .where('company_id', company[0].id)
+          .select()
+          .then(questions => {
+            return response.status(200).json(questions)
+          })
+        }
+      })
+      .catch((error) => {
+      response.status(500).json({
+        error
+      });
+    })
+  }
 });
 
 app.get('/api/v1/questions/:id', (request, response) => {
@@ -222,7 +247,6 @@ app.delete('/api/v1/questions/:id', (request, response) => {
       error
     }));
 });
-
 
 
 app.listen(app.get('port'), () => {
