@@ -43,10 +43,10 @@ const checkQuestionId = (request, response, next) => {
         next()
       }
     })
-  }
-  
-  const checkCompanyId = (request, response, next) => {
-    database('companies').where('id', request.params.id)
+}
+
+const checkCompanyId = (request, response, next) => {
+  database('companies').where('id', request.params.id)
     .select()
     .then(company => {
       console.log(company)
@@ -58,6 +58,21 @@ const checkQuestionId = (request, response, next) => {
         next()
       }
     })
+}
+
+const checkAuth = (request, response, next) => {
+  const { token } = request.query;
+
+  if (!token) {
+    return response.status(403).send('You must be authorized to hit this endpoint.')
+  } else {
+    try {
+      const verified = jwt.verify(token, process.env.SECRET_KEY)
+      next();
+    } catch (error) {
+      response.status(403).send(error.message);
+    }
+  }
 }
 
 //gets
