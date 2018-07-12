@@ -70,16 +70,16 @@ describe('api routes', () => {
 
   })
 
-  describe('GET /api/v1/projects/:id', () => {
-    it('should return a specific project', done => {
+  describe('GET /api/v1/companies/:id', () => {
+    it.only('should return a specific company', done => {
       chai.request(server)
-        .get('/api/v1/projects/1')
+        .get('/api/v1/companies/1')
         .end((error, response) => {
           response.should.have.status(200);
           response.should.be.json;
           response.body.should.be.a('object');
           response.body.should.have.property('name');
-          response.body.name.should.equal('My Fake Project');
+          response.body.name.should.equal('Turing');
           response.body.should.have.property('id');
           response.body.id.should.equal(1);
           done();
