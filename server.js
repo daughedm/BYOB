@@ -49,7 +49,6 @@ const checkCompanyId = (request, response, next) => {
   database('companies').where('id', request.params.id)
     .select()
     .then(company => {
-      console.log(company)
       if (!company.length) {
         return response.status(404).json({
           error: 'Sorry, company could not be found'
@@ -68,9 +67,10 @@ const checkAuth = (request, response, next) => {
   } else {
     try {
       const verified = jwt.verify(token, process.env.SECRET_KEY)
+
       next();
     } catch (error) {
-      response.status(403).send(error.message);
+      return response.status(403).send(error.message);
     }
   }
 }
@@ -296,7 +296,7 @@ app.delete('/api/v1/questions/:id', checkAuth, verifyEmail, (request, response) 
   const { id } = request.params;
 
   return database('questions').where('id', id).del()
-    .then(questions => response.status(204))
+    .then(questions => response.sendStatus(204))
     .catch(error => response.status(500).json({
       error
     }));
