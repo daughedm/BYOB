@@ -75,6 +75,19 @@ const checkAuth = (request, response, next) => {
   }
 }
 
+const verifyEmail = (request, response, next) => {
+  const { token } = request.query;
+  const decoded = jwt.decode(token, {complete: true});
+  const { email } = decoded.payload;
+  const emailEnd = email.split('@')[1];
+
+  if (emailEnd !== 'turing.io') {
+    return response.status(403).send('You must have a valid admin email.')
+  } else {
+    next();
+  }
+}
+
 //gets
 app.get('/', (request, response) => {
   response.send('Welcome to Company Interview Questions');
@@ -196,7 +209,7 @@ app.post('/api/v1/authenticate', (request, response) => {
 });
 
 
-app.post('/api/v1/companies', checkAuth, checkCompanyParams, (request, response) => {
+app.post('/api/v1/companies', checkAuth, verifyEmail, checkCompanyParams, (request, response) => {
   const { name } = request.body
   database('companies').insert({ name, totalQuestions: 0 }, 'id')
     .then((companyId) => {
@@ -211,7 +224,7 @@ app.post('/api/v1/companies', checkAuth, checkCompanyParams, (request, response)
     });
 });
 
-app.post('/api/v1/questions', checkAuth, checkQuestionParams, (request, response) => {
+app.post('/api/v1/questions', checkAuth, verifyEmail, checkQuestionParams, (request, response) => {
   const { question, date, position, company } = request.body
   
   database('companies').where("name", company)
@@ -239,7 +252,7 @@ app.post('/api/v1/questions', checkAuth, checkQuestionParams, (request, response
 
 
 // puts
-app.put('/api/v1/questions/:id', checkAuth, checkQuestionParams, checkQuestionId, (request, response) => {
+app.put('/api/v1/questions/:id', checkAuth, verifyEmail, checkQuestionParams, checkQuestionId, (request, response) => {
   const { id } = request.params
   const { question, position, date } = request.body;
      database('questions').where("id", id)
@@ -254,7 +267,7 @@ app.put('/api/v1/questions/:id', checkAuth, checkQuestionParams, checkQuestionId
       .catch(error => response.status(400).send(error));
 })
 
-app.put('/api/v1/companies/:id', checkAuth, checkCompanyParams, checkCompanyId, (request, response) => {
+app.put('/api/v1/companies/:id', checkAuth, verifyEmail, checkCompanyParams, checkCompanyId, (request, response) => {
   const { id } = request.params
   const { name } = request.body;
      database('companies').where("id", id)
@@ -269,7 +282,7 @@ app.put('/api/v1/companies/:id', checkAuth, checkCompanyParams, checkCompanyId, 
 
 
 //delete
-app.delete('/api/v1/companies/:id', checkAuth, (request, response) => {
+app.delete('/api/v1/companies/:id', checkAuth, verifyEmail, (request, response) => {
   const { id } = request.params;
 
   return database('companies').where('id', id).del()
@@ -279,7 +292,7 @@ app.delete('/api/v1/companies/:id', checkAuth, (request, response) => {
     }));
 });
 
-app.delete('/api/v1/questions/:id', checkAuth, (request, response) => {
+app.delete('/api/v1/questions/:id', checkAuth, verifyEmail, (request, response) => {
   const { id } = request.params;
 
   return database('questions').where('id', id).del()
