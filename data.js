@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const questions = [{
     company: 'Microsoft',
     date: 'Aug 16, 2012',
