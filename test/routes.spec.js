@@ -179,7 +179,7 @@ describe('api routes', () => {
         })
     })
 
-    it.only('should not add a company if the correct params were not sent', done => {
+    it('should not add a company if the correct params were not sent', done => {
       chai.request(server)
         .post('/api/v1/companies')
         .set('authorization', 'Bearer ' + token)
@@ -192,26 +192,23 @@ describe('api routes', () => {
     })
   })
 
-  describe('POST /api/v1/palettes', () => {
-    it('should add a palette to the database', done => {
+  describe('POST /api/v1/questions', () => {
+    it.only('should add a question to the database', done => {
       chai.request(server)
-        .post('/api/v1/projects/1/palettes')
+        .post('/api/v1/questions')
         .set('authorization', 'Bearer ' + token)
         .send({
-          name: 'palette schmalette',
-          project_id: '1',
-          color1: 'red',
-          color2: 'green',
-          color3: 'blue',
-          color4: 'yellow',
-          color5: 'marigold'
+          question: 'What am I doing with my life?',
+          position: 'janitor',
+          date: 'yesterday',
+          company: 'Turing'
         })
         .end((err, response) => {
           response.should.have.status(201);
           response.should.be.json;
           response.body.should.be.a('object');
-          response.body.should.have.property('palette_id');
-          response.body.palette_id.should.equal(3);
+          response.body.should.have.property('questionId');
+          response.body.questionId.should.equal(3);
           done();
         })
     })
