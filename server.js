@@ -261,7 +261,7 @@ app.put('/api/v1/questions/:id', checkAuth, verifyEmail, checkQuestionParams, ch
       date
     })
     .then(updatedQuestion => {
-      response.status(200).send(`updated ${updatedQuestion} question.`);
+      response.status(200).send(`Updated ${updatedQuestion} question.`);
     })
     .catch(error => response.status(400).send(error));
 });
@@ -274,7 +274,7 @@ app.put('/api/v1/companies/:id', checkAuth, verifyEmail, checkCompanyParams, che
       name
     })
     .then(updatedCompany => {
-      response.status(200).send(`updated ${updatedCompany} company.`);
+      response.status(200).send(`Updated ${updatedCompany} company.`);
     })
     .catch(error => response.status(400).send(error));
 });

@@ -236,11 +236,45 @@ describe('api routes', () => {
   })
 
   describe('PUT /api/v1/questions/:id', () => {
+    it.only('should update the question with the new info', done => {
+      chai.request(server)
+        .put('/api/v1/questions/1')
+        .set('authorization', 'Bearer ' + token)
+        .send({
+          question: 'What am I doing with my life?',
+          position: 'doctor',
+          date: 'yesterday',
+          company: 'Turing'
+        })
+        .end((err, response) => {
+          response.should.have.status(201);
+          response.should.be.json;
+          response.text.should.equal('Updated 1 question.');
+          done();
+        })
+    })
 
+    it('should send an error if the question id is not found', done => {
+
+    })
+
+    it('should send a 422 error if a parameter is missing', done => {
+
+    })
   })
 
   describe('PUT /api/v1/companies/:id', () => {
+    it('should update the company with the new info', done => {
 
+    })
+
+    it('should send an error if the company id is not found', done => {
+
+    })
+
+    it('should send a 422 error if a parameter is missing', done => {
+
+    })
   })
 
   describe('DELETE /api/v1/companies/:id', () => {
