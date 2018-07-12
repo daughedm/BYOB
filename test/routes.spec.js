@@ -126,8 +126,43 @@ describe('api routes', () => {
         })
     })
 
-    it('should return a 404 error if a company is sent in the query that does not exist', () => {
+    it('should return an array of questions for a specific company query', done => {
+       chai.request(server)
+        .get('/api/v1/questions?company=Turing')
+        .end((error, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          response.body.should.be.a('array');
+          response.body.length.should.equal(2);
+          response.body[0].should.have.property('question');
+          response.body[0].question.should.equal('What is your favorite color?');
+          response.body[0].should.have.property('id');
+          response.body[0].id.should.equal(1);
+          response.body[0].should.have.property('date');
+          response.body[0].date.should.equal('May 24, 1991');
+          response.body[0].should.have.property('position');
+          response.body[0].position.should.equal('Sr. Developer');
+          response.body[1].should.have.property('question');
+          response.body[1].question.should.equal('What is your favorite animal?');
+          response.body[1].should.have.property('id');
+          response.body[1].id.should.equal(2);
+          response.body[1].should.have.property('date');
+          response.body[1].date.should.equal('June 24, 1991');
+          response.body[1].should.have.property('position');
+          response.body[1].position.should.equal('Jr. Developer');
+          done();
+        })
+ 
+    })
 
+    it('should return a 404 error if a company is sent in the query that does not exist', done => {
+      chai.request(server)
+        .get('/api/v1/questions?company=dingus')
+        .end((error, response) => {
+          response.should.have.status(404);
+          response.text.should.equal('Company not found.')
+          done();
+        })
     })
 
   })
@@ -164,7 +199,29 @@ describe('api routes', () => {
   })
 
   describe('POST /api/v1/authenticate', () => {
+    it('should return a jwt', done => {
+      chai.request(server)
+        .post('/api/v1/authenticate')
+        .send({ email: 'test@turing.io', appName: 'test' }) 
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          response.body.should.be.a('string');
+          done();
+        })
+    })
 
+    it('should return an error if parameters are missing', done => {
+      chai.request(server)
+        .post('/api/v1/authenticate')
+        .send({ appName: 'test' }) 
+        .end((err, response) => {
+          response.should.have.status(422);
+          response.text.should.be.equal('You are missing email in the body of your request.');
+          done();
+        })
+
+    })
   })
 
   describe('POST /api/v1/companies', () => {
@@ -273,7 +330,7 @@ describe('api routes', () => {
 
     it('should send a 422 error if a parameter is missing', done => {
       chai.request(server)
-        .put('/api/v1/questions/1111')
+        .put('/api/v1/questions/1')
         .set('authorization', 'Bearer ' + token)
         .send({
           position: 'doctor',
@@ -290,15 +347,48 @@ describe('api routes', () => {
 
   describe('PUT /api/v1/companies/:id', () => {
     it('should update the company with the new info', done => {
+      chai.request(server)
+        .put('/api/v1/companies/1')
+        .set('authorization', 'Bearer ' + token)
+        .send({
+          name: 'Galvanize'
+        })
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.text.should.equal('Updated 1 company.');
+          done();
+        })
 
     })
 
     it('should send an error if the company id is not found', done => {
+      chai.request(server)
+        .put('/api/v1/companies/1111')
+        .set('authorization', 'Bearer ' + token)
+        .send({
+          name: 'Galvanize'
+        })
+        .end((err, response) => {
+          response.should.have.status(404);
+          response.should.be.json;
+          response.body.error.should.equal('Sorry, company could not be found');
+          done();
+        })
 
     })
 
     it('should send a 422 error if a parameter is missing', done => {
-
+      chai.request(server)
+        .put('/api/v1/companies/1')
+        .set('authorization', 'Bearer ' + token)
+        .send({
+          fakeName: 'DocsPary'
+        })
+        .end((err, response) => {
+          response.should.have.status(422);
+          response.text.should.equal('Missing a name in the body of your request.');
+          done();
+        })
     })
   })
 
