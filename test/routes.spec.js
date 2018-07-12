@@ -120,7 +120,7 @@ describe('api routes', () => {
   })
 
   describe('GET /api/v1/questions/:id', () => {
-    it.only('should return a question object', done => {
+    it('should return a question object', done => {
       chai.request(server)
         .get('/api/v1/questions/1')
         .end((err, response) => {
@@ -139,9 +139,9 @@ describe('api routes', () => {
         })
     })
 
-    it('should return a 404 if no palette was found', done => {
+    it('should return a 404 if no question was found', done => {
       chai.request(server)
-        .get('/api/v1/palettes/100')
+        .get('/api/v1/questions/100')
         .end((err, response) => {
           response.should.have.status(404);
           done();
@@ -150,19 +150,19 @@ describe('api routes', () => {
 
   })
 
-  describe('POST /api/v1/projects', () => {
-    it('should add a project to the database', done => {
+  describe('POST /api/v1/companies', () => {
+    it.only('should add a company to the database', done => {
       chai.request(server)
-        .post('/api/v1/projects')
+        .post('/api/v1/companies')
         .send({
-          name: 'project schmoject'
+          name: 'Company Scmopany'
         })
         .end((err, response) => {
           response.should.have.status(201);
           response.should.be.json;
           response.body.should.be.a('object');
-          response.body.should.have.property('project_id');
-          response.body.project_id.should.equal(2);
+          response.body.should.have.property('companyId');
+          response.body.companyId.should.equal(2);
           done();
         })
     })
