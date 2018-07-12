@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
+const jwt = require('jsonwebtoken');
+require('dotenv').config()
 
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Company Interview Questions';
@@ -41,13 +43,12 @@ const checkQuestionId = (request, response, next) => {
         next()
       }
     })
-  }
-  
-  const checkCompanyId = (request, response, next) => {
-    database('companies').where('id', request.params.id)
+}
+
+const checkCompanyId = (request, response, next) => {
+  database('companies').where('id', request.params.id)
     .select()
     .then(company => {
-      console.log(company)
       if (!company.length) {
         return response.status(404).json({
           error: 'Sorry, company could not be found'
@@ -58,6 +59,34 @@ const checkQuestionId = (request, response, next) => {
     })
 }
 
+const checkAuth = (request, response, next) => {
+  const { token } = request.query;
+
+  if (!token) {
+    return response.status(403).send('You must be authorized to hit this endpoint.')
+  } else {
+    try {
+      const verified = jwt.verify(token, process.env.SECRET_KEY)
+
+      next();
+    } catch (error) {
+      return response.status(403).send(error.message);
+    }
+  }
+}
+
+const verifyEmail = (request, response, next) => {
+  const { token } = request.query;
+  const decoded = jwt.decode(token, {complete: true});
+  const { email } = decoded.payload;
+  const emailEnd = email.split('@')[1];
+
+  if (emailEnd !== 'turing.io') {
+    return response.status(403).send('You must have a valid admin email.')
+  } else {
+    next();
+  }
+}
 
 //gets
 app.get('/', (request, response) => {
@@ -155,7 +184,32 @@ const { id } = request.params
 
 
 //posts
-app.post('/api/v1/companies', checkCompanyParams, (request, response) => {
+app.post('/api/v1/authenticate', (request, response) => {
+  const { email, appName } = request.body;
+  const payload = { email, appName };
+  const requiredParams = ['email', 'appName'];
+  const missingParams = [];
+
+  requiredParams.forEach(param => {
+    if (!payload[param]) {
+      missingParams.push(param);
+    }
+  })
+
+  if (missingParams.length) {
+    return response.status(422).send(`You are missing ${missingParams.join(', ')} in the body of your request.`);
+  } else {
+    const token = jwt.sign(
+      payload, 
+      process.env.SECRET_KEY,
+      { expiresIn: '48h' } 
+    )
+    return response.status(200).json(token);
+  }
+});
+
+
+app.post('/api/v1/companies', checkAuth, verifyEmail, checkCompanyParams, (request, response) => {
   const { name } = request.body
   database('companies').insert({ name, totalQuestions: 0 }, 'id')
     .then((companyId) => {
@@ -170,7 +224,7 @@ app.post('/api/v1/companies', checkCompanyParams, (request, response) => {
     });
 });
 
-app.post('/api/v1/questions', checkQuestionParams, (request, response) => {
+app.post('/api/v1/questions', checkAuth, verifyEmail, checkQuestionParams, (request, response) => {
   const { question, date, position, company } = request.body
   
   database('companies').where("name", company)
@@ -198,7 +252,7 @@ app.post('/api/v1/questions', checkQuestionParams, (request, response) => {
 
 
 // puts
-app.put('/api/v1/questions/:id', checkQuestionParams, checkQuestionId, (request, response) => {
+app.put('/api/v1/questions/:id', checkAuth, verifyEmail, checkQuestionParams, checkQuestionId, (request, response) => {
   const { id } = request.params
   const { question, position, date } = request.body;
      database('questions').where("id", id)
@@ -213,7 +267,7 @@ app.put('/api/v1/questions/:id', checkQuestionParams, checkQuestionId, (request,
       .catch(error => response.status(400).send(error));
 })
 
-app.put('/api/v1/companies/:id', checkCompanyParams, checkCompanyId, (request, response) => {
+app.put('/api/v1/companies/:id', checkAuth, verifyEmail, checkCompanyParams, checkCompanyId, (request, response) => {
   const { id } = request.params
   const { name } = request.body;
      database('companies').where("id", id)
@@ -228,7 +282,7 @@ app.put('/api/v1/companies/:id', checkCompanyParams, checkCompanyId, (request, r
 
 
 //delete
-app.delete('/api/v1/companies/:id', (request, response) => {
+app.delete('/api/v1/companies/:id', checkAuth, verifyEmail, (request, response) => {
   const { id } = request.params;
 
   return database('companies').where('id', id).del()
@@ -238,11 +292,11 @@ app.delete('/api/v1/companies/:id', (request, response) => {
     }));
 });
 
-app.delete('/api/v1/questions/:id', (request, response) => {
+app.delete('/api/v1/questions/:id', checkAuth, verifyEmail, (request, response) => {
   const { id } = request.params;
 
   return database('questions').where('id', id).del()
-    .then(questions => response.status(204))
+    .then(questions => response.sendStatus(204))
     .catch(error => response.status(500).json({
       error
     }));
