@@ -236,7 +236,7 @@ describe('api routes', () => {
   })
 
   describe('PUT /api/v1/questions/:id', () => {
-    it.only('should update the question with the new info', done => {
+    it('should update the question with the new info', done => {
       chai.request(server)
         .put('/api/v1/questions/1')
         .set('authorization', 'Bearer ' + token)
@@ -247,19 +247,44 @@ describe('api routes', () => {
           company: 'Turing'
         })
         .end((err, response) => {
-          response.should.have.status(201);
-          response.should.be.json;
+          response.should.have.status(200);
           response.text.should.equal('Updated 1 question.');
           done();
         })
     })
 
     it('should send an error if the question id is not found', done => {
-
+      chai.request(server)
+        .put('/api/v1/questions/1111')
+        .set('authorization', 'Bearer ' + token)
+        .send({
+          question: 'What am I doing with my life?',
+          position: 'doctor',
+          date: 'yesterday',
+          company: 'Turing'
+        })
+        .end((err, response) => {
+          response.should.have.status(404);
+          response.should.be.json;
+          response.body.error.should.equal('Sorry, question could not be found');
+          done();
+        })
     })
 
     it('should send a 422 error if a parameter is missing', done => {
-
+      chai.request(server)
+        .put('/api/v1/questions/1111')
+        .set('authorization', 'Bearer ' + token)
+        .send({
+          position: 'doctor',
+          date: 'yesterday',
+          company: 'Turing'
+        })
+        .end((err, response) => {
+          response.should.have.status(422);
+          response.text.should.equal('Missing content in the body of your request.');
+          done();
+        })
     })
   })
 
