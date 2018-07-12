@@ -86,7 +86,7 @@ describe('api routes', () => {
         })
     })
 
-    it.only('should return a 404 if the project was not found', done => {
+    it('should return a 404 if the project was not found', done => {
       chai.request(server)
         .get('/api/v1/companies/3')
         .end((err, response) => {
@@ -94,51 +94,32 @@ describe('api routes', () => {
           done();
         })
     })
-
   })
 
-  describe('GET /api/v1/projects/:id/palettes', () => {
-    it('should return an array of palettes for a specific project', done => {
+  describe('GET /api/v1/questions', () => {
+    it.only('should return an array of questions', done => {
       chai.request(server)
-        .get('/api/v1/projects/1/palettes')
-        .end((err, response) => {
+        .get('/api/v1/questions')
+        .end((error, response) => {
           response.should.have.status(200);
           response.should.be.json;
           response.body.should.be.a('array');
           response.body.length.should.equal(2);
-          response.body[0].should.have.property('name');
-          response.body[0].name.should.equal('greens');
-          response.body[0].should.have.property('project_id');
-          response.body[0].project_id.should.equal(1);
-          response.body[0].should.have.property('color1');
-          response.body[0].color1.should.equal('#111111');
-          response.body[0].should.have.property('color2');
-          response.body[0].color2.should.equal('#222222');
-          response.body[0].should.have.property('color3');
-          response.body[0].color3.should.equal('#333333');
-          response.body[0].should.have.property('color4');
-          response.body[0].color4.should.equal('#444444');
-          response.body[0].should.have.property('color5');
-          response.body[0].color5.should.equal('#555555');
-          done(); 
-        })
-    })
-
-    it('should return an empty array if no palettes match the project', done => {
-      chai.request(server)
-        .get('/api/v1/projects/2/palettes')
-        .end((err, response) => {
-          response.should.have.status(200);
-          response.should.be.json;
-          response.body.should.be.a('array');
-          response.body.length.should.equal(0);
+          response.body[0].should.have.property('question');
+          response.body[0].question.should.equal('What is your favorite color?');
+          response.body[0].should.have.property('id');
+          response.body[0].id.should.equal(1);
+          response.body[0].should.have.property('date');
+          response.body[0].date.should.equal('May 24, 1991');
+          response.body[0].should.have.property('position');
+          response.body[0].position.should.equal('Sr. Developer');
           done();
         })
     })
 
   })
 
-  describe('GET /api/v1/palettes/:id', () => {
+  describe('GET /api/v1/questions/:id', () => {
     it('should return a palette object', done => {
       chai.request(server)
         .get('/api/v1/palettes/1')
