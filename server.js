@@ -21,11 +21,41 @@ const checkCompanyParams = (request, response, next) => {
 }
 
 const checkQuestionParams = (request, response, next) => {
-  // if (!request.body.name) {
-  //   response.status(422).send('Missing a name in the body of your request.')
-  // } 
+  const {question, company, date, position} = request.body
+  if (!question || !company || !date || !position) {
+    response.status(422).send('Missing content in the body of your request.')
+  } else {
     next();
+  }
+}
+
+const checkQuestionId = (request, response, next) => {
+  database('questions').where('id', request.params.id)
+    .select()
+    .then(question => {
+      if(!question.length) {
+        return response.status(404).json({
+          error: 'Sorry, question could not be found'
+        })
+      } else {
+        next()
+      }
+    })
+  }
   
+  const checkCompanyId = (request, response, next) => {
+    database('companies').where('id', request.params.id)
+    .select()
+    .then(company => {
+      console.log(company)
+      if (!company.length) {
+        return response.status(404).json({
+          error: 'Sorry, company could not be found'
+        })
+      } else {
+        next()
+      }
+    })
 }
 
 
@@ -67,6 +97,8 @@ app.get('/api/v1/companies/:id', (request, response) => {
 })
 
 app.get('/api/v1/questions', (request, response) => {
+  const companyQuery = request.query.company;
+  if(!companyQuery) {
   database('questions')
     .select()
     .then((questions) => {
@@ -76,7 +108,30 @@ app.get('/api/v1/questions', (request, response) => {
       response.status(500).json({
         error
       });
-    });
+    })
+  } else {
+    database('companies')
+      .where('name', companyQuery)
+      .select()
+      .then(company => {
+        console.log(company)
+        if (!company.length) {
+          return response.status(404).send('Company not found.')
+        } else {
+          database('questions')
+          .where('company_id', company[0].id)
+          .select()
+          .then(questions => {
+            return response.status(200).json(questions)
+          })
+        }
+      })
+      .catch((error) => {
+      response.status(500).json({
+        error
+      });
+    })
+  }
 });
 
 app.get('/api/v1/questions/:id', (request, response) => {
@@ -142,24 +197,56 @@ app.post('/api/v1/questions', checkQuestionParams, (request, response) => {
 });
 
 
-//puts
-app.put('/api/v1/questions/:id', checkQuestionParams, (request, response) => {
-
+// puts
+app.put('/api/v1/questions/:id', checkQuestionParams, checkQuestionId, (request, response) => {
+  const { id } = request.params
+  const { question, position, date } = request.body;
+     database('questions').where("id", id)
+      .update({
+        question,
+        position,
+        date
+      })
+      .then(updatedQuestion => {
+        response.status(200).send(`updated ${updatedQuestion} question.`)
+      })
+      .catch(error => response.status(400).send(error));
 })
 
-app.put('/api/v1/companies/:id', checkCompanyParams, (request, response) => {
-
+app.put('/api/v1/companies/:id', checkCompanyParams, checkCompanyId, (request, response) => {
+  const { id } = request.params
+  const { name } = request.body;
+     database('companies').where("id", id)
+      .update({
+        name
+      })
+      .then(updatedCompany => {
+        response.status(200).send(`updated ${updatedCompany} company.`)
+      })
+      .catch(error => response.status(400).send(error));
 })
+
 
 //delete
-app.delete('/api/v1/questions/:id', (request, response) => {
-
-})
-
 app.delete('/api/v1/companies/:id', (request, response) => {
+  const { id } = request.params;
 
-})
+  return database('companies').where('id', id).del()
+    .then(companies => response.status(204))
+    .catch(error => response.status(500).json({
+      error
+    }));
+});
 
+app.delete('/api/v1/questions/:id', (request, response) => {
+  const { id } = request.params;
+
+  return database('questions').where('id', id).del()
+    .then(questions => response.status(204))
+    .catch(error => response.status(500).json({
+      error
+    }));
+});
 
 
 app.listen(app.get('port'), () => {
