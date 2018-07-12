@@ -284,17 +284,19 @@ app.put('/api/v1/companies/:id', checkAuth, verifyEmail, checkCompanyParams, che
 app.delete('/api/v1/companies/:id', checkAuth, verifyEmail, (request, response) => {
   const { id } = request.params;
 
-  return database('companies').where('id', id).del()
-    .then(companies => response.status(204))
-    .catch(error => response.status(500).json({
-      error
-    }));
+  database('questions').where('company_id', id).del()
+    .then(questions => {
+      database('companies').where('id', id).del()
+        .then(companies => response.sendStatus(204))
+        .catch(error => response.status(500).json({ error }));
+    })
+    .catch(error => response.status(500).json({ error }));
 });
 
 app.delete('/api/v1/questions/:id', checkAuth, verifyEmail, (request, response) => {
   const { id } = request.params;
 
-  return database('questions').where('id', id).del()
+  database('questions').where('id', id).del()
     .then(questions => response.sendStatus(204))
     .catch(error => response.status(500).json({
       error

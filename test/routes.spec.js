@@ -126,6 +126,10 @@ describe('api routes', () => {
         })
     })
 
+    it('should return a 404 error if a company is sent in the query that does not exist', () => {
+
+    })
+
   })
 
   describe('GET /api/v1/questions/:id', () => {
@@ -193,7 +197,7 @@ describe('api routes', () => {
   })
 
   describe('POST /api/v1/questions', () => {
-    it.only('should add a question to the database', done => {
+    it('should add a question to the database', done => {
       chai.request(server)
         .post('/api/v1/questions')
         .set('authorization', 'Bearer ' + token)
@@ -213,71 +217,54 @@ describe('api routes', () => {
         })
     })
 
-    it('should not add a palette if any params are missing', done => {
+    it('should not add a question if any params are missing', done => {
       chai.request(server)
-        .post('/api/v1/projects/1/palettes')
+        .post('/api/v1/questions')
+        .set('authorization', 'Bearer ' + token)
         .send({
-          project_id: '1',
-          color1: 'red',
-          color2: 'green',
-          color3: 'blue',
-          color4: 'yellow',
-          color5: 'marigold'
+          position: 'janitor',
+          date: 'yesterday',
+          company: 'Turing'
         })
         .end((err, response) => {
           response.should.have.status(422);
-          response.body.error.should.equal('Expected format: { name: <String>, color1: <String>, color2: <String>, color3: <String>, color4: <String>, color5: <String> }. You\'re missing a name property')
-          done();
-        })
-    })
-
-    it('should not add a palette if the project was not found', done => {
-      chai.request(server)
-        .post('/api/v1/projects/111/palettes')
-        .send({
-          name: 'pal',
-          project_id: '1',
-          color1: 'red',
-          color2: 'green',
-          color3: 'blue',
-          color4: 'yellow',
-          color5: 'marigold'
-        })
-        .end((err, response) => {
-          response.should.have.status(404);
-          response.body.error.should.equal('Could not find project with id 111.')
-          done();
-        })
-    })
-  })
-
-  describe('DELETE /api/v1/palettes/:id', () => {
-    it('should delete a palette from the database', done => {
-      chai.request(server)
-        .delete('/api/v1/palettes/1')
-        .end((err, response) => {
-          response.should.have.status(200);
-          chai.request(server)
-            .get('/api/v1/palettes/1')
-            .end((err, response) => {
-              response.should.have.status(404);
-              response.body.error.should.equal('Could not find palette with id 1.');
-              done();
-            })
-        })
-    })
-
-    it('should send a 404 if the project was not found', done => {
-      chai.request(server)
-        .delete('/api/v1/palettes/81')
-        .end((err, response) => {
-          response.should.have.status(404);
-          response.body.error.should.equal('Could not find palette with id 81.');
+          response.text.should.equal('Missing content in the body of your request.')
           done();
         })
     })
 
   })
 
+  describe('PUT /api/v1/questions/:id', () => {
+
+  })
+
+  describe('PUT /api/v1/companies/:id', () => {
+
+  })
+
+  describe('DELETE /api/v1/companies/:id', () => {
+    it('should delete a company from the database', done => {
+      chai.request(server)
+        .delete('/api/v1/companies/1')
+        .set('authorization', 'Bearer ' + token)
+        .end((err, response) => {
+          response.should.have.status(204);
+          done();
+        })
+    })
+  })
+
+  describe('DELETE /api/v1/questions/:id', () => {
+    it('should delete a question from the database', done => {
+      chai.request(server)
+        .delete('/api/v1/questions/1')
+        .set('authorization', 'Bearer ' + token)
+        .end((err, response) => {
+          response.should.have.status(204);
+          done();
+        })
+    })
+  })
 
 })
