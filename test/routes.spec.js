@@ -97,7 +97,7 @@ describe('api routes', () => {
   })
 
   describe('GET /api/v1/questions', () => {
-    it.only('should return an array of questions', done => {
+    it('should return an array of questions', done => {
       chai.request(server)
         .get('/api/v1/questions')
         .end((error, response) => {
@@ -120,27 +120,21 @@ describe('api routes', () => {
   })
 
   describe('GET /api/v1/questions/:id', () => {
-    it('should return a palette object', done => {
+    it.only('should return a question object', done => {
       chai.request(server)
-        .get('/api/v1/palettes/1')
+        .get('/api/v1/questions/1')
         .end((err, response) => {
           response.should.have.status(200);
           response.should.be.json;
           response.body.should.be.a('object');
-          response.body.should.have.property('name');
-          response.body.name.should.equal('greens');
-          response.body.should.have.property('project_id');
-          response.body.project_id.should.equal(1);
-          response.body.should.have.property('color1');
-          response.body.color1.should.equal('#111111');
-          response.body.should.have.property('color2');
-          response.body.color2.should.equal('#222222');
-          response.body.should.have.property('color3');
-          response.body.color3.should.equal('#333333');
-          response.body.should.have.property('color4');
-          response.body.color4.should.equal('#444444');
-          response.body.should.have.property('color5');
-          response.body.color5.should.equal('#555555');
+          response.body.should.have.property('question');
+          response.body.question.should.equal('What is your favorite color?');
+          response.body.should.have.property('id');
+          response.body.id.should.equal(1);
+          response.body.should.have.property('date');
+          response.body.date.should.equal('May 24, 1991');
+          response.body.should.have.property('position');
+          response.body.position.should.equal('Sr. Developer');
           done(); 
         })
     })
