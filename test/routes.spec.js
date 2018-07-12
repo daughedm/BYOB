@@ -5,6 +5,8 @@ const should = chai.should();
 const chaiHttp = require('chai-http');
 const server = require('../server');
 const database = require('../db/knex');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 chai.use(chaiHttp);
 
@@ -30,8 +32,15 @@ describe('client routes', () => {
 })
 
 describe('api routes', () => {
+  let token;
 
   beforeEach(done => {
+    token = jwt.sign(
+      { email: 'test@turing.io', appName: 'test' }, 
+      process.env.SECRET_KEY,
+      { expiresIn: '48h' } 
+    );
+
     database.migrate.rollback()
       .then(() => {
         database.migrate.latest()
@@ -150,13 +159,16 @@ describe('api routes', () => {
 
   })
 
+  describe('POST /api/v1/authenticate', () => {
+
+  })
+
   describe('POST /api/v1/companies', () => {
-    it.only('should add a company to the database', done => {
+    it('should add a company to the database', done => {
       chai.request(server)
         .post('/api/v1/companies')
-        .send({
-          name: 'Company Scmopany'
-        })
+        .set('authorization', 'Bearer ' + token)
+        .send({ name: 'Company Scmopany' })
         .end((err, response) => {
           response.should.have.status(201);
           response.should.be.json;
@@ -167,12 +179,14 @@ describe('api routes', () => {
         })
     })
 
-    it('should not add a project if the correct params were not sent', done => {
+    it.only('should not add a company if the correct params were not sent', done => {
       chai.request(server)
-        .post('/api/v1/projects')
+        .post('/api/v1/companies')
+        .set('authorization', 'Bearer ' + token)
+        .send({ notAValidParam: 'Company Scmopany' })
         .end((err, response) => {
           response.should.have.status(422);
-          response.body.error.should.equal('Expected format: { name: <String> }. You\'re missing a name property.')
+          response.text.should.equal('Missing a name in the body of your request.')
           done();
         })
     })
@@ -182,6 +196,7 @@ describe('api routes', () => {
     it('should add a palette to the database', done => {
       chai.request(server)
         .post('/api/v1/projects/1/palettes')
+        .set('authorization', 'Bearer ' + token)
         .send({
           name: 'palette schmalette',
           project_id: '1',
