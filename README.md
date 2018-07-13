@@ -28,7 +28,7 @@ Run the server with `node server.js`
 ## API Reference
 
 ### Authorization
-To request admin access, visit [interview-questions-database.herokuapp.com] and enter a valid email address and app name.
+To request admin access, visit https://byob-interview-questions.herokuapp.com/ and enter a valid email address and app name.
 
 All write enpoints require a token to be sent as the authorization header: 
 `Authorization: Bearer [your-token]`
