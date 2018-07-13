@@ -65,6 +65,7 @@ const checkAuth = (request, response, next) => {
     return response.status(403).send('You must be authorized to hit this endpoint.');
   } else {
     try {
+      // eslint-disable-next-line no-unused-vars
       const verified = jwt.verify(token, process.env.SECRET_KEY);
 
       next();
@@ -196,7 +197,7 @@ app.post('/api/v1/authenticate', (request, response) => {
   });
 
   if (missingParams.length) {
-    return response.status(422).send(`You are missing ${missingParams.join(', ')} in the body of your request.`);
+    return response.status(422).send(`You are missing ${missingParams.join(', ')} in the body of your request.`); // eslint-disable-line max-len
   } else {
     const token = jwt.sign(
       payload, 
@@ -251,6 +252,7 @@ app.post('/api/v1/questions', checkAuth, verifyEmail, checkQuestionParams, (requ
 
 
 // puts
+// eslint-disable-next-line max-len
 app.put('/api/v1/questions/:id', checkAuth, verifyEmail, checkQuestionParams, checkQuestionId, (request, response) => {
   const { id } = request.params;
   const { question, position, date } = request.body;
@@ -265,7 +267,7 @@ app.put('/api/v1/questions/:id', checkAuth, verifyEmail, checkQuestionParams, ch
     })
     .catch(error => response.status(400).send(error));
 });
-
+// eslint-disable-next-line max-len
 app.put('/api/v1/companies/:id', checkAuth, verifyEmail, checkCompanyParams, checkCompanyId, (request, response) => {
   const { id } = request.params;
   const { name } = request.body;
@@ -285,8 +287,10 @@ app.delete('/api/v1/companies/:id', checkAuth, verifyEmail, (request, response) 
   const { id } = request.params;
 
   database('questions').where('company_id', id).del()
+    // eslint-disable-next-line no-unused-vars
     .then(questions => {
       database('companies').where('id', id).del()
+        // eslint-disable-next-line no-unused-vars
         .then(companies => response.sendStatus(204))
         .catch(error => response.status(500).json({ error }));
     })
@@ -297,6 +301,7 @@ app.delete('/api/v1/questions/:id', checkAuth, verifyEmail, (request, response) 
   const { id } = request.params;
 
   database('questions').where('id', id).del()
+    // eslint-disable-next-line no-unused-vars
     .then(questions => response.sendStatus(204))
     .catch(error => response.status(500).json({
       error
@@ -305,6 +310,7 @@ app.delete('/api/v1/questions/:id', checkAuth, verifyEmail, (request, response) 
 
 
 app.listen(app.get('port'), () => {
+  // eslint-disable-next-line no-console
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
 });
 
