@@ -34,7 +34,6 @@
     "eslint": "^5.1.0",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",
-    "locus": "^2.0.1",
     "mocha": "^5.2.0",
     "nightmare": "^3.0.1"
   }
