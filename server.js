@@ -203,7 +203,7 @@ app.post('/api/v1/authenticate', (request, response) => {
       process.env.SECRET_KEY,
       { expiresIn: '48h' } 
     );
-    return response.status(200).json(token);
+    return response.status(200).json({ token });
   }
 });
 
