@@ -34,61 +34,61 @@ All write enpoints require a token to be sent as the authorization header:
 `Authorization: Bearer [your-token]`
 
 ### Endpoints:
-* `GET /companies`: 
+* `GET /companies`
 
 Receive a json object of all companies. 
 
-* `GET /companies/:id`: 
+* `GET /companies/:id`
 
 Receive a json object of a specific company.
 Request requirements: Send the company id in the url.
 Optional query parameters: Add `?company=[companyName]` to the url to receive a json object of all questions for a specific company.
 
-* `GET /questions`: 
+* `GET /questions`
 
 Receive a json object of all questions.
 
-* `GET /questions/:id`: 
+* `GET /questions/:id`
 
 Receive a json object of a specific question.
 Request requirements: Send the question id in the url.
 
-* `POST /companies`: 
+* `POST /companies`
 
 Add a new company.
 Request requirements: 
 Header: Must send your authorization token in the header. See Authorization section for more info. 
 Body: Must send a company name in the body as `{ name: [company-name] }`
 
-* `POST /questions`: 
+* `POST /questions`
 
 Add a new question.
 Request requirements: 
 Header: Must send your authorization token in the header. See Authorization section for more info. 
 Body: Must send all question info - `question`, `position`, `date`, `company`
 
-* `PUT /companies/:id`: 
+* `PUT /companies/:id`
 
 Update an existing company.
 Request requirements:
 Header: Must send your authorization token in the header. See Authorization section for more info. 
 Body: Must send a company name in the body as `{ name: [company-name] }`
 
-* `PUT /questions/:id`: 
+* `PUT /questions/:id`
 
 Update an existing question.
 Request requirements: 
 Header: Must send your authorization token in the header. See Authorization section for more info. 
 Body: Send the question info you are updating  - `question`, `position`, `date`, `company`
 
-* `DELETE /companies/:id`: 
+* `DELETE /companies/:id`
 
 Delete a company.
 Request requirements: 
 Header: Must send your authorization token in the header. See Authorization section for more info. 
 Url: Send the company id in the url.
 
-* `DELETE /questions/:id`: 
+* `DELETE /questions/:id`
 
 Delete a question.
 Request requirements: 
