@@ -36,7 +36,7 @@ All write enpoints require a token to be sent as the authorization header:
 ### Endpoints:
 * `GET /companies`
 
-Receive a json object of all companies. 
+Receive a json object of all companies.  
 Sample Response:
 ```
 [
@@ -60,9 +60,9 @@ Sample Response:
 
 * `GET /companies/:id`
 
-Receive a json object of a specific company.
-Request requirements: Send the company id in the url.
-Optional query parameters: Add `?company=[companyName]` to the url to receive a json object of all questions for a specific company.
+Receive a json object of a specific company.  
+Request requirements: Send the company id in the url.  
+Optional query parameters: Add `?company=[companyName]` to the url to receive a json object of all questions for a specific company.  
 Sample Response:
 ```
 {
@@ -76,7 +76,7 @@ Sample Response:
 
 * `GET /questions`
 
-Receive a json object of all questions.
+Receive a json object of all questions.  
 Sample Response:
 ```
 [
@@ -104,8 +104,8 @@ Sample Response:
 
 * `GET /questions/:id`
 
-Receive a json object of a specific question.
-Request requirements: Send the question id in the url.
+Receive a json object of a specific question.  
+Request requirements: Send the question id in the url.  
 Sample Response:
 ```
 {
@@ -121,45 +121,45 @@ Sample Response:
 
 * `POST /companies`
 
-Add a new company.
-Request requirements: 
-Header: Must send your authorization token in the header. See Authorization section for more info. 
-Body: Must send a company name in the body as `{ name: [company-name] }`
+Add a new company.  
+Request requirements:   
+Header: Must send your authorization token in the header. See Authorization section for more info.  
+Body: Must send a company name in the body as `{ name: [company-name] }`  
 
 * `POST /questions`
 
-Add a new question.
-Request requirements: 
-Header: Must send your authorization token in the header. See Authorization section for more info. 
-Body: Must send all question info - `question`, `position`, `date`, `company`
+Add a new question.  
+Request requirements:  
+Header: Must send your authorization token in the header. See Authorization section for more info.  
+Body: Must send all question info - `question`, `position`, `date`, `company`  
 
 * `PUT /companies/:id`
 
-Update an existing company.
-Request requirements:
-Header: Must send your authorization token in the header. See Authorization section for more info. 
-Body: Must send a company name in the body as `{ name: [company-name] }`
+Update an existing company.  
+Request requirements:  
+Header: Must send your authorization token in the header. See Authorization section for more info.  
+Body: Must send a company name in the body as `{ name: [company-name] }`  
 
 * `PUT /questions/:id`
 
-Update an existing question.
-Request requirements: 
-Header: Must send your authorization token in the header. See Authorization section for more info. 
-Body: Send the question info you are updating  - `question`, `position`, `date`, `company`
+Update an existing question.  
+Request requirements:  
+Header: Must send your authorization token in the header. See Authorization section for more info.  
+Body: Send the question info you are updating  - `question`, `position`, `date`, `company`  
 
 * `DELETE /companies/:id`
 
-Delete a company.
-Request requirements: 
-Header: Must send your authorization token in the header. See Authorization section for more info. 
-Url: Send the company id in the url.
+Delete a company.  
+Request requirements:  
+Header: Must send your authorization token in the header. See Authorization section for more info.  
+Url: Send the company id in the url.  
 
 * `DELETE /questions/:id`
 
-Delete a question.
-Request requirements: 
-Header: Must send your authorization token in the header. See Authorization section for more info. 
-Url: Send the question id in the url.
+Delete a question.  
+Request requirements:  
+Header: Must send your authorization token in the header. See Authorization section for more info.  
+Url: Send the question id in the url.  
 
 
 ## Contributors
