@@ -4,9 +4,8 @@ var nightmare = Nightmare({
 });
 require('locus');
 
-
 nightmare
-  .goto('https://www.glassdoor.com/Interview/denver-software-engineer-interview-questions-SRCH_IL.0,6_IM234_KO7,24.htm')
+  .goto('https://www.glassdoor.com/Interview/denver-software-engineer-interview-questions-SRCH_IL.0,6_IM234_KO7,24.htm') // eslint-disable-line max-len
   .wait(2000)
   .evaluate(function () {
     var linkNodes = document.querySelectorAll('.pagingControls .page a');
@@ -60,7 +59,7 @@ nightmare
           return questions;
         })
         .catch(function (error) {
-          console.error('Search failed:', error);
+          console.error('Search failed:', error); // eslint-disable-line no-console
         });
     });
   })
@@ -70,10 +69,10 @@ nightmare
   })
   .then( function (result) {
     const flattenedQuestions = [].concat(...result);
-    console.log(flattenedQuestions);
+    console.log(flattenedQuestions); // eslint-disable-line no-console
 
   })
 
   .catch(function (error) {
-    console.error('Search failed:', error);
+    console.error('Search failed:', error); // eslint-disable-line no-console
   });

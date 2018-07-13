@@ -41,7 +41,6 @@
         "allowSingleLine": true
       }
     ],
-    "camelcase": "warn",
     "comma-dangle": [
       "error",
       "never"
@@ -91,7 +90,6 @@
       "e",
       "cb",
       "callback",
-      "payload",
       "obj",
       "arr"
     ],
