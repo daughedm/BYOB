@@ -13,7 +13,7 @@ async function getToken(event) {
   const response = await fetch('/api/v1/authenticate', options);
   const token = await response.json();
 
-  showToken(token);
+  showToken(token.token);
 }
 
 function showToken(token) {

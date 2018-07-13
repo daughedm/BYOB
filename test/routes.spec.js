@@ -206,7 +206,8 @@ describe('api routes', () => {
         .end((err, response) => {
           response.should.have.status(200);
           response.should.be.json;
-          response.body.should.be.a('string');
+          response.body.should.be.a('object');
+          response.body.should.have.property('token');
           done();
         })
     })
