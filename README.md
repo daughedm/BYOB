@@ -37,21 +37,87 @@ All write enpoints require a token to be sent as the authorization header:
 * `GET /companies`
 
 Receive a json object of all companies. 
+Sample Response:
+```
+[
+    {
+        "id": 1,
+        "name": "Microsoft",
+        "totalQuestions": 1,
+        "created_at": "2018-07-12T00:49:55.699Z",
+        "updated_at": "2018-07-12T00:49:55.699Z"
+    },
+    {
+        "id": 2,
+        "name": "Raytheon",
+        "totalQuestions": 2,
+        "created_at": "2018-07-12T00:49:55.706Z",
+        "updated_at": "2018-07-12T00:49:55.706Z"
+    },
+    ...
+]
+```
 
 * `GET /companies/:id`
 
 Receive a json object of a specific company.
 Request requirements: Send the company id in the url.
 Optional query parameters: Add `?company=[companyName]` to the url to receive a json object of all questions for a specific company.
+Sample Response:
+```
+{
+    "id": 1,
+    "name": "Microsoft",
+    "totalQuestions": 1,
+    "created_at": "2018-07-12T00:49:55.699Z",
+    "updated_at": "2018-07-12T00:49:55.699Z"
+}
+```
 
 * `GET /questions`
 
 Receive a json object of all questions.
+Sample Response:
+```
+[
+    {
+        "id": 4,
+        "question": "They asked me to provide the current client list for my company and their clients contact details.",
+        "position": "Software Engineer",
+        "date": "Apr 7, 2012",
+        "company_id": 3,
+        "created_at": "2018-07-12T00:49:55.733Z",
+        "updated_at": "2018-07-12T00:49:55.733Z"
+    },
+    {
+        "id": 5,
+        "question": "Question related to hibernate data caching",
+        "position": "Software Engineer",
+        "date": "Apr 7, 2012",
+        "company_id": 3,
+        "created_at": "2018-07-12T00:49:55.734Z",
+        "updated_at": "2018-07-12T00:49:55.734Z"
+    },
+    ...
+]
+```
 
 * `GET /questions/:id`
 
 Receive a json object of a specific question.
 Request requirements: Send the question id in the url.
+Sample Response:
+```
+{
+    "id": 4,
+    "question": "They asked me to provide the current client list for my company and their clients contact details.",
+    "position": "Software Engineer",
+    "date": "Apr 7, 2012",
+    "company_id": 3,
+    "created_at": "2018-07-12T00:49:55.733Z",
+    "updated_at": "2018-07-12T00:49:55.733Z"
+}
+```
 
 * `POST /companies`
 
@@ -100,6 +166,6 @@ Url: Send the question id in the url.
 
 [David Daugherty](https://github.com/daughedm) & [Daniela Carey](https://github.com/danielafcarey)
 
-(**[Turing School of Software & Design Front-end Engineering project spec](http://frontend.turing.io/projects/build-your-own-backend.html) - Mod 4:**)
+(**[Turing School of Software & Design Front-end Engineering project spec](http://frontend.turing.io/projects/build-your-own-backend.html) - Mod 4**)
 
 
